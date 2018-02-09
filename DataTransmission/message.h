@@ -13,7 +13,8 @@ public:
     {
         NonType,
         Activated,
-        Deactivated
+        Deactivated,
+        Greetings
     };
 
     Message() :

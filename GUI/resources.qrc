@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>guard.png</file>
+    </qresource>
+</RCC>
