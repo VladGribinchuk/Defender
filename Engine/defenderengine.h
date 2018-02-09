@@ -19,13 +19,13 @@ class QTimer;
 namespace defender_engine
 {
 
-class Engine : public QObject
+class DefenderEngine : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Engine();
-    ~Engine();
+    explicit DefenderEngine();
+    ~DefenderEngine();
 
     /* Message communication */
     void setPort(int port);

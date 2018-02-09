@@ -1,5 +1,5 @@
-#include "engine.h"
-#include "enginesettings.h"
+#include "defenderengine.h"
+#include "defenderenginesettings.h"
 #include "startuputil.h"
 #include "systeminfoutil.h"
 
@@ -21,7 +21,7 @@ namespace defender_engine
 
 using namespace data_transmission;
 
-Engine::Engine()
+DefenderEngine::DefenderEngine()
 {
     int port = getPort();
     mReceiver.reset(new MessageReceiver(port));
@@ -29,7 +29,7 @@ Engine::Engine()
 
     setUpDataTransmittion();
 
-    connect(this, &Engine::error, &Logger::instance(), &Logger::error);
+    connect(this, &DefenderEngine::error, &Logger::instance(), &Logger::error);
 
     mTimer = new QTimer(this);
     connect(mTimer, &QTimer::timeout, this, [this](){ emit updateRunningProcesses(getAllRunningProcesses()); });
@@ -38,13 +38,13 @@ Engine::Engine()
     Logger::instance().message(QString("Engine is initialized. Listen on port: %1").arg(port));
 }
 
-Engine::~Engine()
+DefenderEngine::~DefenderEngine()
 {
     sendShutDownMessage();
     Logger::instance().message("Engine is deinitialized");
 }
 
-void Engine::setPort(int port)
+void DefenderEngine::setPort(int port)
 {
     if (mSender.get() != nullptr)
         sendShutDownMessage();
@@ -56,35 +56,35 @@ void Engine::setPort(int port)
 
     sendStartUpMessage();
 
-    EngineSettings::instance().setValue("port", port);
+    DefenderEngineSettings::instance().setValue("port", port);
     Logger::instance().message(QString("Communication port set to %1").arg(port));
 }
 
-int Engine::getPort() const
+int DefenderEngine::getPort() const
 {
-    return EngineSettings::instance().value("port", data_transmission::GetDefaultPort()).toInt();
+    return DefenderEngineSettings::instance().value("port", data_transmission::GetDefaultPort()).toInt();
 }
 
-void Engine::setTimeout(int ms)
+void DefenderEngine::setTimeout(int ms)
 {
     mTimer->stop();
     mTimer->start(ms);
 
-    EngineSettings::instance().setValue("timeout", ms);
+    DefenderEngineSettings::instance().setValue("timeout", ms);
     Logger::instance().message(QString("Processes monitoring timeout set to %1 ms").arg(ms));
 }
 
-int Engine::getTimeout() const
+int DefenderEngine::getTimeout() const
 {
-    return EngineSettings::instance().value("timeout", 1000).toInt();
+    return DefenderEngineSettings::instance().value("timeout", 1000).toInt();
 }
 
-ProcessesList Engine::getAllRunningProcesses() const
+ProcessesList DefenderEngine::getAllRunningProcesses() const
 {
     return ProcessUtil::instance().getAllRunningProcess();
 }
 
-void Engine::killProcess(long id) const
+void DefenderEngine::killProcess(long id) const
 {
     QString errorStr;
     if (!ProcessUtil::instance().killProcessById(id, errorStr))
@@ -97,25 +97,25 @@ void Engine::killProcess(long id) const
     }
 }
 
-void Engine::setStartUp(bool isStartUp)
+void DefenderEngine::setStartUp(bool isStartUp)
 {
     StartUpUtil::setStartUp("DefenderApp", isStartUp);
 
-    EngineSettings::instance().setValue("startup", isStartUp);
+    DefenderEngineSettings::instance().setValue("startup", isStartUp);
     Logger::instance().message(QString("Application startup on system boot is %1").arg(QString(isStartUp?"on":"off")));
 }
 
-bool Engine::getStartUp() const
+bool DefenderEngine::getStartUp() const
 {
-    return EngineSettings::instance().value("startup", false).toBool();
+    return DefenderEngineSettings::instance().value("startup", false).toBool();
 }
 
-QString Engine::getSystemInfo() const
+QString DefenderEngine::getSystemInfo() const
 {
-    return EngineSettings::instance().value("sysinfo", "").toString();
+    return DefenderEngineSettings::instance().value("sysinfo", "").toString();
 }
 
-void Engine::setUpDataTransmittion()
+void DefenderEngine::setUpDataTransmittion()
 {
     if (mReceiver.get() == nullptr || mSender.get() == nullptr)
         return;
@@ -140,38 +140,38 @@ void Engine::setUpDataTransmittion()
         }
     });
 
-    connect(mReceiver.get(), &MessageReceiver::error, this, &Engine::error);
-    connect(mSender.get(), &MessageSender::error, this, &Engine::error);
+    connect(mReceiver.get(), &MessageTransmission::error, this, &DefenderEngine::error);
+    connect(mSender.get(), &MessageTransmission::error, this, &DefenderEngine::error);
 }
 
-void Engine::sendStartUpMessage()
+void DefenderEngine::sendStartUpMessage()
 {
     mSender->broadcast(Message(Message::MessageType::Activated));
     Logger::instance().message("Send startup message");
 }
 
-void Engine::sendShutDownMessage()
+void DefenderEngine::sendShutDownMessage()
 {
     mSender->broadcast(Message(Message::MessageType::Deactivated));
     Logger::instance().message("Send shutdown message");
 }
 
-void Engine::sendIAmOnlineMessage(const QString& recipient)
+void DefenderEngine::sendIAmOnlineMessage(const QString& recipient)
 {
     mSender->send(Message(Message::MessageType::Greetings), recipient);
     Logger::instance().message(QString("Send greeting to %1").arg(recipient));
 }
 
-void Engine::checkSysInfo()
+void DefenderEngine::checkSysInfo()
 {
     QString sysinfo = SystemInfoUtil::getSystemInfo();
-    QString grabbed = EngineSettings::instance().value("sysinfo", "").toString();
+    QString grabbed = DefenderEngineSettings::instance().value("sysinfo", "").toString();
     if (!grabbed.isEmpty() && sysinfo != grabbed)
     {
         Logger::instance().warning("System configuration was chaged");
         emit systemInfoChanged();
     }
-    EngineSettings::instance().setValue("sysinfo", sysinfo);
+    DefenderEngineSettings::instance().setValue("sysinfo", sysinfo);
 }
 
 }

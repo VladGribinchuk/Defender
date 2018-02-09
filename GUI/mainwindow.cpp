@@ -1,7 +1,7 @@
 #include "mainwindow.h"
-#include "engine.h"
+#include "defenderengine.h"
 #include "logger.h"
-#include "enginesettings.h"
+#include "defenderenginesettings.h"
 #include "views.h"
 
 #include <QMenuBar>
@@ -54,7 +54,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::createEngine()
 {
-    mEngine = std::unique_ptr<defender_engine::Engine>(new Engine);
+    mEngine = std::unique_ptr<defender_engine::DefenderEngine>(new DefenderEngine);
 }
 
 void MainWindow::createUI()
@@ -69,22 +69,22 @@ void MainWindow::createUI()
 
 void MainWindow::setupEngine()
 {
-    connect(mEngine.get(), &Engine::systemInfoChanged, this, [this](){
+    connect(mEngine.get(), &DefenderEngine::systemInfoChanged, this, [this](){
         QMessageBox::information(this, "Defender Application", "System info was changes since last startup.");
     });
 
-    connect(mEngine.get(), &Engine::receiveIAmOnlineMessage, mNodesView, &NodesView::addNode);
-    connect(mEngine.get(), &Engine::receiveStartUpMessage, mNodesView, &NodesView::addNode);
-    connect(mEngine.get(), &Engine::receiveShutDownMessage, mNodesView, &NodesView::removeNode);
-    connect(mEngine.get(), &Engine::updateRunningProcesses, mProcessesView, &ProcessesView::updateProcessesList);
+    connect(mEngine.get(), &DefenderEngine::receiveIAmOnlineMessage, mNodesView, &NodesView::addNode);
+    connect(mEngine.get(), &DefenderEngine::receiveStartUpMessage, mNodesView, &NodesView::addNode);
+    connect(mEngine.get(), &DefenderEngine::receiveShutDownMessage, mNodesView, &NodesView::removeNode);
+    connect(mEngine.get(), &DefenderEngine::updateRunningProcesses, mProcessesView, &ProcessesView::updateProcessesList);
 
-    connect(mProcessesView, &ProcessesView::stopProcess, mEngine.get(), &Engine::killProcess);
+    connect(mProcessesView, &ProcessesView::stopProcess, mEngine.get(), &DefenderEngine::killProcess);
     connect(mSettingsView, &SettingsView::portChanged, this, [this](int port){
         mNodesView->clearNodes();
         mEngine->setPort(port);
     });
-    connect(mSettingsView, &SettingsView::timeoutChanged, mEngine.get(), &Engine::setTimeout);
-    connect(mSettingsView, &SettingsView::startUpChanged, mEngine.get(), &Engine::setStartUp);
+    connect(mSettingsView, &SettingsView::timeoutChanged, mEngine.get(), &DefenderEngine::setTimeout);
+    connect(mSettingsView, &SettingsView::startUpChanged, mEngine.get(), &DefenderEngine::setStartUp);
 
     mEngine->checkSysInfo();
     mEngine->sendStartUpMessage();

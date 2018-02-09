@@ -11,7 +11,7 @@ class QCloseEvent;
 
 namespace defender_engine
 {
-class Engine;
+class DefenderEngine;
 }
 
 namespace defender_gui
@@ -40,7 +40,7 @@ private:
 
 private:
     /* Core functionality */
-    std::unique_ptr<defender_engine::Engine> mEngine;
+    std::unique_ptr<defender_engine::DefenderEngine> mEngine;
 
     /* UI elements */
     QSystemTrayIcon* mTrayIcon;

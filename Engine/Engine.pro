@@ -5,18 +5,20 @@ TARGET = Engine
 TEMPLATE = lib
 CONFIG += staticlib
 
-SOURCES += engine.cpp \
+SOURCES += \
     logger.cpp \
-    enginesettings.cpp \
     processutil.cpp \
     startuputil.cpp \
-    systeminfoutil.cpp
-HEADERS += engine.h \
+    systeminfoutil.cpp \
+    defenderengine.cpp \
+    defenderenginesettings.cpp
+HEADERS += \
     logger.h \
-    enginesettings.h \
     processutil.h \
     startuputil.h \
-    systeminfoutil.h
+    systeminfoutil.h \
+    defenderengine.h \
+    defenderenginesettings.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../DataTransmission/release/ -lDataTransmission
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../DataTransmission/debug/ -lDataTransmission
