@@ -8,6 +8,13 @@
 namespace defender_engine
 {
 
+struct LogInfo
+{
+    long deletedEntries = 0;
+    long sizeBefore = 0;
+    long sizeAfter = 0;
+};
+
 class Logger : public QObject
 {
     Q_OBJECT
@@ -22,6 +29,10 @@ public:
     void message(const QString&);
     void warning(const QString&);
     void error(const QString&);
+    void critical(const QString&);
+    void state(const QString&);
+
+    LogInfo optimize();
 
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
@@ -36,7 +47,9 @@ private:
     {
         Message,
         Warning,
-        Error
+        Error,
+        CriticalIssue,
+        WorkingState
     };
 
     static QString toQString(LogType type)
@@ -46,6 +59,8 @@ private:
         case LogType::Message: return QString("Message");
         case LogType::Warning: return QString("Warning");
         case LogType::Error: return QString("Error");
+        case LogType::CriticalIssue: return QString("CriticalIssue");
+        case LogType::WorkingState: return QString("WorkingState");
         default: return QString("");
         }
     }

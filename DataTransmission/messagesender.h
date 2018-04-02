@@ -3,6 +3,8 @@
 
 #include "datatransmission.h"
 
+#include <mutex>
+
 class QString;
 class QUdpSocket;
 
@@ -22,6 +24,9 @@ public:
 public slots:
     void broadcast(const Message& msg);
     void send(const Message& msg, const QString&);
+
+private:
+    std::mutex mut;
 };
 
 }

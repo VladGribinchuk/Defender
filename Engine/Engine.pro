@@ -11,14 +11,18 @@ SOURCES += \
     startuputil.cpp \
     systeminfoutil.cpp \
     defenderengine.cpp \
-    defenderenginesettings.cpp
+    defenderenginesettings.cpp \
+    fileutil.cpp \
+    virusscanner.cpp
 HEADERS += \
     logger.h \
     processutil.h \
     startuputil.h \
     systeminfoutil.h \
     defenderengine.h \
-    defenderenginesettings.h
+    defenderenginesettings.h \
+    fileutil.h \
+    virusscanner.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../DataTransmission/release/ -lDataTransmission
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../DataTransmission/debug/ -lDataTransmission

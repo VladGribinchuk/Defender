@@ -22,4 +22,12 @@ Message Message::fromQByteArray(const QByteArray& data)
     return message;
 }
 
+
+
+
+
+
+
+
+
 }

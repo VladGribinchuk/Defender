@@ -207,6 +207,24 @@ bool ProcessUtil::killProcessById(long pid, QString& errorString) const
 #endif
 }
 
+QString ProcessUtil::exePath(long pid) const
+{
+    QString res;
+#ifdef _WIN32
+    HANDLE processHandle = NULL;
+    TCHAR filename[MAX_PATH] = {0};
+
+    processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+    if (processHandle != NULL)
+    {
+        GetModuleFileNameEx(processHandle, NULL, filename, MAX_PATH);
+        CloseHandle(processHandle);
+    }
+    res = QString::fromStdWString(std::wstring(filename));
+#endif
+     return res;
+}
+
 ProcessUtil::~ProcessUtil()
 {
 }

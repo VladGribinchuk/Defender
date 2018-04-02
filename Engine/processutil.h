@@ -44,6 +44,8 @@ public:
     void killProcess(const QString&) const;
     bool killProcessById(long, QString&) const;
 
+    QString exePath(long pid) const;
+
     ProcessUtil(const ProcessUtil&) = delete;
     ProcessUtil& operator=(const ProcessUtil&) = delete;
 
